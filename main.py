@@ -30,8 +30,7 @@ cofy = CofyAPI(auth=TokenAuth({environ.get("ENERGY_ID_COFY_API_TOKEN", ""): Toke
 # ---------------------------------------------------------------------------
 # --- Solar directive --------------------------------------------------------
 # Elia's solar production forecast for the Antwerp province,
-# as % of the monitored PV capacity, mapped to directive steps:
-#   no sun → "--", ≤5% → "-", ≤20% → "0", ≤40% → "+", >40% → "++"
+# as % of the monitored PV capacity, mapped to directive steps
 QUARTER_HOUR = dt.timedelta(minutes=15)
 
 
@@ -43,7 +42,7 @@ cofy.register_module(
     DirectiveModule(
         source=DirectiveSource(
             CachedTimeseriesSource(EliaSolarForecastSource(region="Antwerp")),
-            boundaries=(0, 5, 20, 40),
+            boundaries=(-1, 0, 12, 40),
         ),
         name="solar",
         description="Directive based on Elia's solar production forecast for the Antwerp province",
