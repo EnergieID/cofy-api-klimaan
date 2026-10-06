@@ -77,12 +77,13 @@ jobs:
         uses: scaleway/action-scw@v0
         with:
           # action inputs aren't run by a shell, so they can only use ${{ }} expressions
-          args: container container update ${{ secrets.SCW_CONTAINER_ID }} registry-image=${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} region=${{ env.SCW_REGION }}
+          args: container container update ${{ secrets.SCW_CONTAINER_ID }} image=${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }} region=${{ env.SCW_REGION }}
           secret-key: ${{ secrets.SCW_SECRET_KEY }}
           default-project-id: ${{ secrets.SCW_PROJECT_ID }}
           default-organization-id: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
           access-key: ${{ secrets.SCW_ACCESS_KEY }}
           save-config: true
+          version: v2.64.0  # pinned: CLI arguments change between releases
 
       # Only runs after a successful deploy, so the image we just rolled out is never at risk.
       - name: Clean up old images
