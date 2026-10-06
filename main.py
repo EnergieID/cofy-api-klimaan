@@ -42,7 +42,7 @@ cofy.register_module(
     DirectiveModule(
         source=DirectiveSource(
             CachedTimeseriesSource(EliaSolarForecastSource(region="Antwerp")),
-            boundaries=(-1, 0, 12, 40),
+            boundaries=(0, 3, 12, 40),
         ),
         name="solar",
         description="Directive based on Elia's solar production forecast for the Antwerp province",
