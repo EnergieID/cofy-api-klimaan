@@ -1,9 +1,7 @@
-# cofy-api-template
+# cofy-api-klimaan
 
-Template repository for spinning up a new [cofy-api](https://github.com/EnergieID/cofy-api) instance — the open-source modular framework by [EnergyID](https://www.energieid.be/) for ingesting, standardising, and serving energy-related data.
-
-> **Use this template:** click _"Use this template"_ on GitHub (or clone and
-> rename) to start a fresh project. Then follow the steps below.
+[cofy-api](https://github.com/EnergieID/cofy-api) instance for Klimaan, serving a solar directive: a signal that
+says how good a moment is to consume electricity, based on how much solar production Elia predicts.
 
 
 ## Quick start
@@ -26,12 +24,7 @@ cp .env.example .env
 # Edit .env and fill in your values
 ```
 
-### 3. Enable your modules
-
-Open `main.py` and add the modules you need (tariff, production, …).
-See [cofy-api README](https://github.com/EnergieID/cofy-api) for all available modules & options.
-
-### 4. Run the dev server
+### 3. Run the dev server
 
 ```bash
 poe dev          # starts FastAPI with auto-reload, reads .env
@@ -40,7 +33,7 @@ poe dev          # starts FastAPI with auto-reload, reads .env
 The API is now available at `http://localhost:8000`.
 Health-check: `GET /health`
 
-### 5. Run a production-like container locally
+### 4. Run a production-like container locally
 
 ```bash
 poe prod         # builds the Docker image and runs it on port 8080
@@ -66,6 +59,8 @@ Every commit will automatically run:
 | **Ruff** | Linting + auto-fix | `poe lint` |
 | **Ruff** | Formatting | `poe format` |
 | **ty** | Type checking | `poe check` |
+
+Run the tests with `poe test`.
 
 You can also run them manually at any time.
 

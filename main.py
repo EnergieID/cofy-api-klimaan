@@ -10,31 +10,48 @@ Quick start:
   3. `poe dev` to start the dev server (auto-reloads, reads .env)
 """
 
+import datetime as dt
 from os import environ
 
-from cofy import CofyAPI
-from cofy.api import token_verifier
-from fastapi import Depends
+from cofy.api import CofyAPI, TokenAuth, TokenInfo
+from cofy.modules.directive import DirectiveModule, DirectiveSource
+from cofy.modules.timeseries import CachedTimeseriesSource, floor_datetime
+
+from solar import EliaSolarForecastSource
 
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
-# token_verifier protects all module endpoints with a simple bearer token.
-# Map each token to a dict with at least a "name" key.
-cofy = CofyAPI(dependencies=[Depends(token_verifier({environ.get("ENERGY_ID_COFY_API_TOKEN"): {"name": "EnergyID"}}))])
+# TokenAuth protects all module endpoints with a simple bearer token.
+cofy = CofyAPI(auth=TokenAuth({environ.get("ENERGY_ID_COFY_API_TOKEN", ""): TokenInfo(name="EnergyID")}))
 
 # ---------------------------------------------------------------------------
-# Modules – uncomment / add the ones you need
+# Modules
 # ---------------------------------------------------------------------------
-# Each module exposes its own set of API routes under the name you choose.
-# Browse the available modules:  https://github.com/EnergieID/cofy-api
+# --- Solar directive --------------------------------------------------------
+# Elia's solar production forecast for the Antwerp province,
+# as % of the monitored PV capacity, mapped to directive steps:
+#   no sun → "--", ≤5% → "-", ≤20% → "0", ≤40% → "+", >40% → "++"
+QUARTER_HOUR = dt.timedelta(minutes=15)
 
-# --- Tariff module (day-ahead energy prices) --------------------------------
-# from cofy.modules.tariff import TariffModule
-#
-# cofy.register_module(
-#     TariffModule(
-#        api_key=environ.get("ENTSOE_API_KEY", ""),
-#        name="entsoe",
-#     )
-# )
+
+def _now() -> dt.datetime:
+    return floor_datetime(dt.datetime.now(dt.UTC), QUARTER_HOUR)
+
+
+cofy.register_module(
+    DirectiveModule(
+        source=DirectiveSource(
+            CachedTimeseriesSource(EliaSolarForecastSource(region="Antwerp")),
+            boundaries=(0, 0, 20, 40),
+        ),
+        name="solar",
+        description="Directive based on Elia's solar production forecast for the Antwerp province",
+        default_args={
+            "resolution": "PT15M",
+            # forward-looking by default: the next 24 hours
+            "start": _now,
+            "end": lambda: _now() + dt.timedelta(days=1),
+        },
+    )
+)

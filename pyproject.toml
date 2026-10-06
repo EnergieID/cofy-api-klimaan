@@ -1,28 +1,31 @@
 [project]
-name = "cofy-api-myproject" # Change this to your project name
+name = "cofy-api-klimaan"
 authors = [
     { name="EnergyID", email = "info@energieid.be" },
     # Add your name and email here if you want to be listed as an author
 ]
 version = "0.1.0"
-description = "A Cofy API instance" # Add a short description of your project here
+description = "Cofy API for Klimaan: solar directive based on Elia forecasts"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    # Add the extras you need: [tariff], [production]
-    # e.g. "cofy-api[tariff,production]>=0.2.0"
-    "cofy-api>=0.6.6",
+    "cofy-api[directive]>=0.7.0",
+    "httpx>=0.28.0",
+    "polars>=1.38.1",
 ]
 
 [dependency-groups]
 dev = [
     "ruff>=0.16.1",
     "ty>=0.0.69",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=1.0.0",
 ]
 [tool.poe.tasks]
 lint = "ruff check --fix"
 format = "ruff format"
 check = "ty check"
+test = "pytest"
 [tool.poe.tasks.dev]
 cmd = "fastapi dev main.py"
 envfile = ".env"
@@ -45,3 +48,5 @@ select = [
 ignore = [
     "E501", #Line too long
 ]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
