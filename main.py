@@ -47,7 +47,7 @@ cofy.register_module(
         name="solar",
         description="Directive based on Elia's solar production forecast for the Antwerp province",
         default_args={
-            "resolution": "PT15M",
+            "resolution": "PT1H",
             # forward-looking by default: the next 24 hours
             "start": _now,
             "end": lambda: _now() + dt.timedelta(days=1),
